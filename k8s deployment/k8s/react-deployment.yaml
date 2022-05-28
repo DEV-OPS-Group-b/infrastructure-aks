@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: react
+  name: react
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        deployment-isolated-network: "true"
+        app: react
+    spec:
+      containers:
+        - image: fadidasus/react-mini-twit-frontend
+          name: react-frontend
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              memory: "262144e3"
+      restartPolicy: Always

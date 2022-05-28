@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: go
+  name: go
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        deployment-isolated-network: "true"
+        app: go
+    spec:
+      containers:
+        - image: fadidasus/go-mini-twit-simulator
+          name: go-simulator
+          ports:
+            - containerPort: 9000
+          resources:
+            limits:
+              memory: "524288e3"
+      restartPolicy: Always

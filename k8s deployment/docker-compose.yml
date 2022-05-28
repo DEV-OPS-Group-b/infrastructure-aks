@@ -1,0 +1,50 @@
+version: '2'
+services:
+  go:
+    container_name: go-simulator
+    image: fadidasus/go-mini-twit-simulator
+    ports:
+      - "9000:9000"
+    environment:
+      - BACKEND=spring
+    depends_on:
+      - mongo
+      - spring
+      - react
+    restart: always
+    mem_limit: 1000M
+    networks:
+      - isolated-network
+  react:
+    container_name: react-frontend
+    image: fadidasus/react-mini-twit-frontend
+    ports:
+      - "3000:3000"
+    restart: always
+    mem_limit: 250M
+    depends_on:
+      - spring
+      - mongo
+    networks:
+      - isolated-network
+  spring:
+    container_name: spring-backend
+    image: fadidasus/mini-twit-backend
+    ports:
+      - "8080:8080"
+    restart: always
+    mem_limit: 1000M
+    networks:
+      - isolated-network
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+    mem_limit: 1000M
+    networks:
+      - isolated-network
+networks:
+  isolated-network:
+    driver: bridge
