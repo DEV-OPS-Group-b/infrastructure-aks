@@ -1,0 +1,8 @@
+# All we really need is the target/*.jar which we copy into the Docker image
+.git/
+.idea/
+.settings/
+.vscode/
+ci/
+ops/
+

@@ -1,0 +1,70 @@
+
+
+trigger:
+  - manual
+
+variables:
+  azureServiceConnection: 'testing-service-connection' 
+  resourceGroupName: 'rg-minitweet-testing-01'
+
+  rgtemplateFile: './rg/rg.bicep'
+  stgtemplateFile: './stg/stg.bicep'
+  piptemplateFile: './pip/pip.bicep'
+  akstemplateFile: './aks/aks.bicep'
+  aksparameterstemplateFile: './aks/parameters.json'
+  vnettemplateFile: './vnet/vnet.bicep'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: 'FirstJob'
+    steps:
+
+    - task: AzureCLI@2
+      displayName: resource group creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment sub create --location westeurope --template-file $(rgtemplateFile)
+
+    - task: AzureCLI@2
+      displayName: ip address creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file $(piptemplateFile)
+
+    - task: AzureCLI@2
+      displayName: storage account creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file $(stgtemplateFile)
+
+    - task: AzureCLI@2
+      displayName: vnet creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file $(vnettemplateFile)
+
+    - task: AzureCLI@2
+      displayName: AKS creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file $(akstemplateFile) --parameters $(aksparameterstemplateFile)

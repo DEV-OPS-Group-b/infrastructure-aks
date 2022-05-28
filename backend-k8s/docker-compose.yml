@@ -1,0 +1,20 @@
+version: '2'
+services:
+  spring:
+    container_name: spring-backend
+    image: fadidasus/spring-boot-backend:1.0
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    networks:
+      - isolated-network
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+networks:
+  isolated-network:
+    driver: bridge
