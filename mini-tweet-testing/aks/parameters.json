@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "clientId": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/03c39f99-ad60-4424-9d2a-67d99f0f12a7/resourceGroups/rg-minitweet-shared-testing-01/providers/Microsoft.KeyVault/vaults/kv-minitweet-testing-01"
+                },
+                "secretName": "secret-sp-minitweet-testing-aks-clientid"
+            }
+        },
+        "secret": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/03c39f99-ad60-4424-9d2a-67d99f0f12a7/resourceGroups/rg-minitweet-shared-testing-01/providers/Microsoft.KeyVault/vaults/kv-minitweet-testing-01"
+                },
+                "secretName": "secret-sp-minitweet-testing-aks-secret"
+            }
+        }
+    }
+}

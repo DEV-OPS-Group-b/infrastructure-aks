@@ -1,0 +1,60 @@
+
+
+trigger:
+  - master
+
+variables:
+  azureServiceConnection: 'landing-zone-service-connection' 
+  resourceGroupName: 'rg-minitweet-shared-testing-01'
+  
+  rgtemplateFile: './rg/rg.bicep'
+  acrtemplateFile: './acr/acr.bicep'
+  cosmostemplateFile: './cosmos/cosmos.bicep'
+  kvtemplateFile: './kv/kv.bicep'
+
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: 'FirstJob'
+    steps:
+
+    - task: AzureCLI@2
+      displayName: resource group creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment sub create --location westeurope --template-file $(rgtemplateFile)
+
+    - task: AzureCLI@2
+      displayName: container registry creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file $(acrtemplateFile)
+
+    - task: AzureCLI@2
+      displayName: cosmosDb creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file $(cosmostemplateFile)
+
+    - task: AzureCLI@2
+      displayName: keyvault creation
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file $(kvtemplateFile)

@@ -1,0 +1,27 @@
+
+
+trigger:
+  - manual
+
+variables:
+  azureServiceConnection: 'landing-zone-service-connection' 
+  resourceGroupName: 'rg-minitweet-shared-testing-01'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: 'FirstJob'
+    steps:
+    - task: AzureCLI@2
+      displayName: destry resource group
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az group delete -n $(resourceGroupName) --yes --no-wait   
+          
