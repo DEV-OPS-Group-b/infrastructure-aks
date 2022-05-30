@@ -17,7 +17,7 @@ spec:
         app: react
     spec:
       containers:
-        - image: fadidasus/react-mini-twit-frontend
+        - image: acrminitweettesting02/react-mini-twit-frontend
           name: react-frontend
           ports:
             - containerPort: 3000
