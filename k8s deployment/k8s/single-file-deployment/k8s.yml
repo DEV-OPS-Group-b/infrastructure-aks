@@ -71,13 +71,13 @@ items:
             app: go
         spec:
           containers:
-            - image: fadidasus/go-mini-twit-simulator
+            - image: acrminitweettesting02/go-mini-twit-simulator
               name: go-simulator
               ports:
                 - containerPort: 9000
               resources:
                 limits:
-                  memory: "524288e3"
+                  memory: "500Mi"
           restartPolicy: Always
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
@@ -92,31 +92,6 @@ items:
       podSelector:
         matchLabels:
           deployment-isolated-network: "true"
-  - apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      labels:
-        app: mongo
-      name: mongo
-    spec:
-      replicas: 1
-      selector:
-        matchLabels:
-          app: mongo
-      strategy: {}
-      template:
-        metadata:
-          labels:
-            deployment-isolated-network: "true"
-            app: mongo
-        spec:
-          containers:
-            - image: mongo
-              name: mongo
-              ports:
-                - containerPort: 27017
-              resources: {}
-          restartPolicy: Always
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -136,41 +111,87 @@ items:
             app: react
         spec:
           containers:
-            - image: fadidasus/react-mini-twit-frontend
+            - image: acrminitweettesting02/react-mini-twit-frontend
               name: react-frontend
               ports:
                 - containerPort: 3000
               resources:
                 limits:
-                  memory: "262144e3"
+                  memory: "500Mi"
           restartPolicy: Always
-  - apiVersion: apps/v1
-    kind: Deployment
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: Service
     metadata:
       labels:
         app: spring
-      name: spring
+      name: spring-service
     spec:
-      replicas: 1
+      type: NodePort
       selector:
-        matchLabels:
-          app: spring
-      strategy: {}
-      template:
-        metadata:
-          labels:
-            deployment-isolated-network: "true"
-            app: spring
-        spec:
-          containers:
-            - image: fadidasus/spring-mini-twit-backend:2
-              name: spring-backend
-              ports:
-                - containerPort: 8080
-              resources:
-                limits:
-                  memory: "524288e3"
-          restartPolicy: Always
+        app: spring 
+      ports:
+        - port: 8080
+          targetPort: 8080
+          nodePort: 31000
+
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: spring
+      deployment-isolated-network: "false"
+    name: spring-deployment
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        app: spring 
+    minReadySeconds: 10  
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 0
+        maxSurge: 1
+    template:
+      metadata:
+        labels:
+          app: spring  
+      spec:
+        terminationGracePeriodSeconds: 1
+        containers:
+          - image: acrminitweettesting02/spring-boot-backend
+            name: spring-backend
+            imagePullPolicy: Always
+            ports:
+              - containerPort: 8080
+            resources:
+              limits:
+                cpu: 2000m # 2000 milicpu
+                memory: 1600Mi # 1600 MB
+            livenessProbe:
+              httpGet:
+                path: /actuator/health/liveness
+                port: 8080
+              initialDelaySeconds: 15
+              periodSeconds: 3
+              failureThreshold: 1
+            readinessProbe:
+              httpGet:
+                path: /actuator/health/readiness
+                port: 8080
+              initialDelaySeconds: 15
+              periodSeconds: 3
+              failureThreshold: 1
+            env:
+             - name: COSMOS_CONNECTION_STRING
+               valueFrom:
+                 secretKeyRef:
+                   key: uri
+                   name: cosmos-connection
+        restartPolicy: Always
+kind: List
 kind: List
 metadata: {}
 
