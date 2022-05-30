@@ -17,7 +17,7 @@ spec:
         app: go
     spec:
       containers:
-        - image: fadidasus/go-mini-twit-simulator
+        - image: acrminitweettesting02/go-mini-twit-simulator
           name: go-simulator
           ports:
             - containerPort: 9000
