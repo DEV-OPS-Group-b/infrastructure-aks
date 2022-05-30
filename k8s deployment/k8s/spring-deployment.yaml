@@ -7,7 +7,7 @@ items:
         app: spring
       name: spring-service
     spec:
-      type: NodePort
+      type: ClusterIP
       selector:
         app: spring # this will manage all pods that has this label
       ports:
@@ -39,7 +39,7 @@ items:
         spec:
           terminationGracePeriodSeconds: 1
           containers:
-            - image: fadidasus/spring-boot-backend:3
+            - image: acrminitweettesting02/spring-boot-backend
               name: spring-backend
               imagePullPolicy: Always
               ports:
