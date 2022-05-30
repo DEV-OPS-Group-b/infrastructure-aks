@@ -192,6 +192,5 @@ items:
                    name: cosmos-connection
         restartPolicy: Always
 kind: List
-kind: List
 metadata: {}
 
